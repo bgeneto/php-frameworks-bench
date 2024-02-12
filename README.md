@@ -14,6 +14,6 @@ sh ./composer-install.sh
 # exit docker container
 exit
 # extract our controllers, views, routes...
-unizp html.zip
+unzip html.zip
 ```
  
