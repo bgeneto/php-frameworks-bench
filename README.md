@@ -34,24 +34,13 @@ Edit your hosts file (/etc/hosts or C:\Windows\System32\drivers\etc) and add thi
 Now open your preferred browser and navigate to: 
 
 ```
-http://codeigniter.localhost:8080
+http://codeigniter.localhost:8080/benchmarking/info
+http://laravel.localhost:8080/benchmarking/info
+http://symfony.localhost:8080/benchmarking/info
+http://plainphp.localhost:8080/benchmarking/info
 ```
 
-Would should see a Codeigniter 4 welcome page like this: 
+If everything went fine, you should see a standard `phpinfo()` page like this:
 
-![image](https://github.com/bgeneto/php-frameworks-bench/assets/473074/5b4fabf2-de7b-496c-bc8b-ec5c1462f83d)
-
-Do the same for the rest: 
-
-```
-http://laravel.localhost:8080
-```
-
-![image](https://github.com/bgeneto/php-frameworks-bench/assets/473074/9c459cd9-467e-41ff-bd54-e19e089f3735)
-
-```
-http://symfony.localhost:8080
-```
-
-
+![image](https://github.com/bgeneto/php-frameworks-bench/assets/473074/82b1fb4d-c1c6-46fb-ab46-ea919be10632)
 
