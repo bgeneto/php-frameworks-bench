@@ -6,18 +6,14 @@ Docker containers to benchmark several php frameworks
 ```bash
 git clone https://github.com/bgeneto/php-frameworks-bench.git
 cd php-frameworks-bench
-unizp html.zip
 docker compose build --parallel
 docker compose up -d
+# enter php docker container to install all required frameworks via composer
 docker exec -it php-fpm bash
-# install codeigniter 4 framework (inside php-fpm docker container):
-cd /var/www/html/codeigniter
-composer require codeigniter4/appstarter
-# install symfony
-cd ../symfony/
-composer require symfony/skeleton:"7.0.*"
-# install laravel
-cd ../laravel/
-composer require laravel/laravel:"11.x-dev"
+sh ./composer-install.sh
+# exit docker container
+exit
+# extract our controllers, views, routes...
+unizp html.zip
 ```
  
