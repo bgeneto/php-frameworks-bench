@@ -14,7 +14,8 @@ sh ./composer-install.sh
 # extract our controllers, views, routes...
 unzip -o html.zip
 # give permissions to www-data user
-chown -R www-data /var/www/html
+chown -R www-data:1000 /var/www
+chmod g+w /var/www
 # exit docker container
 exit
 # restart all containers (just in case)
