@@ -18,7 +18,8 @@ cp -r ./src/* ./www/html/
 
 # set the right permissions to www-data
 echo -e "We need 'sudo' to set the proper ownership in 'www' folder to 'www-data' user:\n"
-sudo chown -R 33:$UID ./www
+userid=`echo $UID`
+sudo chown -R 33:$userid ./www
 
 # restart all containers (just in case)
 docker compose down && docker compose up -d
