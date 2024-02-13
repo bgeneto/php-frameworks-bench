@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: php-fpm-bookworm:latest
-    container_name: php_fmbench
+    container_name: php_fpm_fmbench
     hostaname: php-fpm
     volumes:
       - ./www/html:/var/www/html:cached
