@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     image: php-fpm-bookworm:latest
     container_name: php_fpm_fmbench
-    hostaname: php-fpm
+    hostname: php-fpm
     volumes:
       - ./www/html:/var/www/html:cached
       - ./conf:/usr/local/etc:cached

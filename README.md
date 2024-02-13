@@ -9,7 +9,7 @@ This project allows you to compare the performance of popular PHP frameworks lik
 
 ## Supported Platforms:
 
-- Windows
+- Windows (WSL2)
 - macOS
 - Linux
 
@@ -32,7 +32,7 @@ git clone https://github.com/bgeneto/php-frameworks-bench
 ### 2. Build the Docker images:
 
 ```bash
-cd php-frameworks-benchmark
+cd php-frameworks-bench
 sh ./build.sh
 ```
 
