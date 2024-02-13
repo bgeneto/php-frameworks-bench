@@ -8,6 +8,8 @@ services:
     image: php-fpm-bookworm:latest
     container_name: php_fpm_fmbench
     hostname: php-fpm
+    environment:
+      - CI_ENV=production
     volumes:
       - ./www/html:/var/www/html:cached
       - ./conf:/usr/local/etc:cached
