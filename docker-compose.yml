@@ -6,7 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     image: php-fpm-bookworm:latest
-    container_name: php-fpm
+    container_name: php_fmbench
+    hostaname: php-fpm
     volumes:
       - ./www/html:/var/www/html:cached
       - ./conf:/usr/local/etc:cached
@@ -17,11 +18,12 @@ services:
 
   redis:
     image: clearlinux/redis
-    container_name: redis
+    container_name: redis_fmbench
+    hostname: redis
 
   nginx:
     image: clearlinux/nginx
-    container_name: nginx
+    container_name: nginx_fmbench
     hostname: nginx
     depends_on:
       - php-fpm
@@ -30,3 +32,17 @@ services:
       - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
       - 8080:80
+
+  h2load:
+    image: openquantumsafe/h2load:latest
+    container_name: h2load_fmbench
+    hostname: h2load
+    depends_on:
+      - php-fpm
+
+  wrk2:
+    image: bootjp/wrk2:latest
+    container_name: wrk2_fmbench
+    hostname: wrk2
+    depends_on:
+      - php-fpm
