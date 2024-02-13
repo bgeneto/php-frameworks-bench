@@ -15,7 +15,8 @@ docker exec -it php_fpm_fmbench bash -c 'cd laravel; php artisan route:clear'
 docker exec -it php_fpm_fmbench composer create-project pocketarc/codeigniter codeigniter3
 
 # save current user id
-userid=`echo $UID`
+userid=$(id -u)
+userid=${userid%% *}
 
 # set the right permissions to www-data
 echo -e "We need 'sudo' to copy files and set the proper ownership:\n"

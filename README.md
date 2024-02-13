@@ -41,16 +41,17 @@ sh ./build.sh
 To check if everything installed correctly and is working as expected, you may need to edit your hosts file (``/etc/hosts` or `C:\Windows\System32\drivers\etc`) and add a line like this:
 
 ```bat
-127.0.0.1      laravel.localhost codeigniter.localhost symfony.localhost plainphp.localhost
+127.0.0.1      laravel.bench codeigniter.bench codeigniter3.bench symfony.bench plainphp.bench
 ```
 
 Then open your preferred browser and navigate to: 
 
 ```
-http://codeigniter.localhost:8080/benchmarking/info
-http://laravel.localhost:8080/benchmarking/info
-http://symfony.localhost:8080/benchmarking/info
-http://plainphp.localhost:8080/benchmarking/info
+http://codeigniter.bench:8080/benchmarking/info
+http://codeigniter3.bench:8080/benchmarking/info
+http://laravel.bench:8080/benchmarking/info
+http://symfony.bench:8080/benchmarking/info
+http://plainphp.bench:8080/benchmarking/info
 ```
 
 If everything went fine, you should see a standard `phpinfo()` page for each address above:

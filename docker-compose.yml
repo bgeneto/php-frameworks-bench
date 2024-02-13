@@ -35,16 +35,3 @@ services:
     ports:
       - 8080:80
 
-  h2load:
-    image: openquantumsafe/h2load:latest
-    container_name: h2load_fmbench
-    hostname: h2load
-    depends_on:
-      - php-fpm
-
-  wrk2:
-    image: bootjp/wrk2:latest
-    container_name: wrk2_fmbench
-    hostname: wrk2
-    depends_on:
-      - php-fpm
