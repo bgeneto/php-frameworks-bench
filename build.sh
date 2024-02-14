@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/usr/bin/bash
 
 # build the php-fpm image with all required extensions
 docker compose build --parallel
@@ -21,7 +21,8 @@ userid=${userid%% *}
 echo -e "We need 'sudo' to copy files and set the proper ownership:\n"
 
 cp -r ./src/* ./www/html/
-chown -R 33:$userid ./www
+chown -R $userid:33 ./www
+chmod -R g+w ./www
 
 # restart all containers (just in case)
 docker compose down && docker compose up -d
