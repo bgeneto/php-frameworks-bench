@@ -14,3 +14,4 @@ for test in $tests; do
     done
 done
 
+docker run --rm -v ./logs:/logs bench/python3 /usr/src/app/plot.py

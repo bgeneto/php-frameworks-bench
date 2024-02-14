@@ -113,11 +113,12 @@ def create_bar_chart(log_directory):
     )
 
     # Export to a single HTML file
-    fig.write_html("/logs/comparison.html")
-
+    export_file = "/logs/bench-comparison-charts.html"
+    fig.write_html(export_file)
+    print(f"Bar chart exported to {export_file}")
 
 # Specify the directory containing the log files
 log_directory = "/logs"
 create_bar_chart(log_directory)
 
-print("Bar chart exported to comparison.html")
+
