@@ -1,21 +1,52 @@
-#!/usr/bin/bash
+#!/bin/bash
 
-IFS=' '
+# Output folder
+output=./results
 
-tests="hello info"
-domains="plainphp.bench codeigniter3.bench codeigniter.bench symfony.bench laravel.bench"
+# Read tests from tests.conf file
+tests=$(cat tests.conf)
 
+# Read domains from frameworks.conf file and append .bench to each
+domains=$(sed 's/$/.bench/' frameworks.conf | tr '\n' ' ')
+
+# Read commands from commands.conf file, skipping empty lines and comments
+commands=$(sed '/^$/d; /^#/d' commands.conf)
+
+# Main loop
 for test in $tests; do
     for domain in $domains; do
-        # run h2load bench and log to file
-        docker run --rm --network="host" -t openquantumsafe/h2load h2load --h1 --warm-up-time 5 -D 10 -c 100 -t 1 -T 5 -m 10 -H "Accept-Encoding: gzip" "http://$domain:8080/benchmarking/$test" | tee "./results/$domain.$test.h2load.log"
-        # run wkr latency and rps test
-        docker run --rm --network="host" -t williamyeh/wrk -c 100 -t 1 --timeout 5 -d 10 --latency "http://$domain:8080/benchmarking/$test" | tee "./results/$domain.$test.wrk.log"
-        # run wrk2 latency test with constant RPS
-        docker run --rm --network="host" -t cylab/wrk2 -c 100 -t 1 --timeout 5 -d 10 -R 1000 --latency "http://$domain:8080/benchmarking/$test" | tee "./results/$domain.$test.wrk2.log"
-        # cooldown
-        echo "Please wait, cooling down..."
-        sleep 5
+        while IFS= read -r line; do
+            # Extract the command and options
+            cmd=$(echo $line | cut -d"=" -f1)
+            options=$(echo $line | cut -d"=" -f2-)
+
+            # Determine which docker image to use based on the command
+            case "$cmd" in
+                h2load)
+                    image="openquantumsafe/h2load h2load"
+                    ;;
+                wrk)
+                    image="williamyeh/wrk"
+                    ;;
+                wrk2)
+                    image="cylab/wrk2"
+                    ;;
+                *)
+                    echo "Unknown command: $cmd"
+                    continue
+                    ;;
+            esac
+
+            # First line stores the command line options/args
+            echo $options > "$output/$domain.$test.$cmd.log"
+
+            # Execute the docker command
+            docker run --rm --network="host" -t $image $options http://$domain:8080/benchmarking/$test | tee -a "$output/$domain.$test.$cmd.log"
+
+            # Cooldown
+            echo "Please wait, cooling down for 5 secs..."
+            sleep 5
+        done <<< "$commands"
     done
 done
 

@@ -16,11 +16,16 @@ def parse_logfile(filename):
     Parses a log file and retrieves the requests per second value.
     """
     with open(filename, "r") as f:
+        c = 0
         for line in f:
+            c += 1
+            # check if is the first line of the log file
+            if c == 1:
+                command_args = line.strip()
             if "finished in" in line:
                 # Extract requests per second value
                 req_per_sec = float(line.split(", ")[1].split("req/s")[0])
-                return req_per_sec
+                return req_per_sec, command_args
     raise ValueError("Could not find relevant data in log file")
 
 
@@ -93,7 +98,7 @@ def plot_total_number_of_files(total_files):
     )
 
     fig.update_layout(
-        title_text="Framework size comparison (excluding cache, logs, storage, var, writable...)",
+        title_text="Framework size comparison<br>(excluding cache, logs, storage, var, writable...)",
         xaxis_title="Framework",
         yaxis_title="Number of Files",
     )
@@ -127,7 +132,8 @@ def plot_h2load(results_dir):
     req_per_sec_values = []
     for i, filename in enumerate(filenames):
         labels.append(frameworks[i] + " - " + benchmarks[i])
-        req_per_sec_values.append(parse_logfile(filename))
+        rps, command_args = parse_logfile(filename)
+        req_per_sec_values.append(rps)
 
     # Initialize dictionaries to hold requests per second values for each benchmark type
     req_per_sec_by_bench = {"Info": [], "Hello": []}
@@ -174,7 +180,7 @@ def plot_h2load(results_dir):
 
     # Update layout to adjust titles and axis labels
     fig.update_layout(
-        title_text="Framework Requests per Second Comparison",
+        title_text=f"Framework requests per second comparison<br>(h2load {command_args})",
         xaxis_title="Framework",
         yaxis_title="Requests per Second (RPS)",
     )
@@ -190,13 +196,11 @@ def plot_wrk2(results_dir):
     latency_data = pd.DataFrame()
 
     # Loop through each file in the logs directory
-    for file in os.listdir(results_dir):
-        if file.endswith(".wrk2.log"):
-            names = file.split(".")
-            framework_name = names[0]
-            bench_name = names[2].capitalize()
+    for filename in os.listdir(results_dir):
+        if filename.endswith(".wrk2.log"):
+            framework_name, benchmark_name = extract_info_from_filename(filename)
             # Construct the full file path
-            file_path = os.path.join(results_dir, file)
+            file_path = os.path.join(results_dir, filename)
 
             # Initialize lists to store the extracted data
             percentiles = []
@@ -205,7 +209,11 @@ def plot_wrk2(results_dir):
             # Open and read the file
             with open(file_path, "r") as f:
                 lines = f.readlines()
+                c = 0
                 for line in lines:
+                    c += 1
+                    if c == 1:
+                        command_args = line.strip()
                     if line.strip() and "Value" not in line and "inf" not in line:
                         # Extract latency and percentile values
                         parts = line.split()
@@ -224,7 +232,7 @@ def plot_wrk2(results_dir):
                 {
                     "Percentile": percentiles,
                     "Latency": latencies,
-                    "File": file.replace(
+                    "File": filename.replace(
                         ".latency.log", ""
                     ),  # Use file name as identifier
                 }
@@ -248,7 +256,7 @@ def plot_wrk2(results_dir):
     grouped = latency_data.groupby("BenchName")
 
     # Loop through each group and create a plot
-    for bench_name, group in grouped:
+    for benchmark_name, group in grouped:
         fig = px.line(
             group,
             x="Percentile",
@@ -256,59 +264,13 @@ def plot_wrk2(results_dir):
             color="FrameworkName",  # Use framework_name as legend
             markers=True,
             labels={"Latency": "Latency (ms)", "Percentile": "Percentile"},
-            title=f"Latency by Percentile for {bench_name} benchmark (100 connections, 1000 Req/s)",
+            title=f"Latency by percentile ({benchmark_name} benchmark)<br>(wrk2 {command_args})",
         )
 
         # Export the plot to a separate HTML file for each bench_name
-        export_file = f"/results/wrk2-charts-{bench_name}.html"
+        export_file = f"/results/wrk2-charts-{benchmark_name}.html"
         fig.write_html(export_file)
-        print(f"Latency charts for {bench_name} exported to {export_file}")
-
-
-def plot_wrk2_old(results_dir):
-    # Dictionary to hold the data
-    data = {}
-
-    # Regular expression to extract information
-    latency_regex = r"Latency\s+(\d+\.\d+)ms"
-    req_sec_regex = r"Req/Sec\s+(\d+\.\d+)k"
-
-    # Iterate through each file in the results directory
-    for filename in os.listdir(results_dir):
-        if filename.endswith(".wrk2.log"):
-            bench_name = filename.split(".")[1]  # Extract the benchmark name
-            if bench_name not in data:
-                data[bench_name] = {"Avg Latency (ms)": [], "Avg Req/Sec (k)": []}
-
-            with open(os.path.join(results_dir, filename), "r") as file:
-                content = file.read()
-
-                # Extract the average latency and requests per second
-                avg_latency_match = re.search(latency_regex, content)
-                avg_req_sec_match = re.search(req_sec_regex, content)
-
-                if avg_latency_match and avg_req_sec_match:
-                    avg_latency = float(avg_latency_match.group(1))
-                    avg_req_sec = float(avg_req_sec_match.group(1))
-
-                    # Append the data
-                    data[bench_name]["Avg Latency (ms)"].append(avg_latency)
-                    data[bench_name]["Avg Req/Sec (k)"].append(avg_req_sec)
-
-    # Plot and export each benchmark's data
-    for bench_name, metrics in data.items():
-        df = pd.DataFrame(metrics)
-        fig = px.line(
-            df,
-            y=["Avg Latency (ms)", "Avg Req/Sec (k)"],
-            title=f"{bench_name} Benchmark Results",
-            labels={"value": "Measurements", "variable": "Metrics"},
-        )
-
-        # Export to HTML
-        export_file = f"/results/wrk_charts.html"
-        fig.write_html(export_file)
-        print(f"wrk charts exported to {export_file}")
+        print(f"Latency charts for {benchmark_name} exported to {export_file}")
 
 
 def plot_wrk(results_dir):
@@ -320,30 +282,30 @@ def plot_wrk(results_dir):
     results = {}
 
     # Iterate over each file in the results directory
-    for file_name in os.listdir(results_dir):
-        if file_name.endswith(".wrk.log"):
-            names = file_name.split(".")
-            framework_name = names[0]
-            bench_name = names[2].capitalize()
+    for filename in os.listdir(results_dir):
+        if filename.endswith(".wrk.log"):
+            framework_name, benchmark_name = extract_info_from_filename(filename)
             with open(
-                os.path.join(results_dir, file_name), "r", encoding="utf-8"
+                os.path.join(results_dir, filename), "r", encoding="utf-8"
             ) as file:
                 content = file.read()
+                # The first line of the file contains the wrk command used
+                command_args = content.split("\n")[0]
                 # Extract the average latency and requests per second
                 avg_latency = float(latency_pattern.search(content).group(1))
                 avg_req_sec = req_sec_pattern.search(content).group(1)
                 # Convert avg_req_sec to requests/sec if the value ends with 'k'
                 if "k" in str(avg_req_sec):
                     avg_req_sec = float(avg_req_sec.replace("k", "")) * 1000
-                if bench_name not in results:
-                    results[bench_name] = {
+                if benchmark_name not in results:
+                    results[benchmark_name] = {
                         "frameworks": [],
                         "latencies": [],
                         "req_secs": [],
                     }
-                results[bench_name]["frameworks"].append(framework_name)
-                results[bench_name]["latencies"].append(avg_latency)
-                results[bench_name]["req_secs"].append(avg_req_sec)
+                results[benchmark_name]["frameworks"].append(framework_name)
+                results[benchmark_name]["latencies"].append(avg_latency)
+                results[benchmark_name]["req_secs"].append(avg_req_sec)
 
     # Create subplots
     fig = make_subplots(
@@ -353,7 +315,7 @@ def plot_wrk(results_dir):
     )
 
     # order latencies in ascending and req_secs descending order
-    for bench_name, data in results.items():
+    for benchmark_name, data in results.items():
         data["framework"], data["latencies"], data["req_secs"] = zip(
             *sorted(
                 zip(data["frameworks"], data["latencies"], data["req_secs"]),
@@ -362,7 +324,7 @@ def plot_wrk(results_dir):
         )
 
     col = 1
-    for bench_name, data in results.items():
+    for benchmark_name, data in results.items():
         # Add the latency bar chart
         fig.add_trace(
             go.Bar(x=data["framework"], y=data["latencies"], name="Avg Latency (ms)"),
@@ -377,7 +339,7 @@ def plot_wrk(results_dir):
         )
         # Add x and y axis titles
         fig.update_xaxes(title_text="Framework", row=1, col=col)
-        fig.update_yaxes(title_text="Avg Latency (ms)", row=1, col=col)
+        fig.update_yaxes(title_text="Avg Latency (ms), lower is better", row=1, col=col)
         fig.update_xaxes(title_text="Framework", row=2, col=col)
         fig.update_yaxes(title_text="Avg Req/Sec", row=2, col=col)
         col += 1
@@ -385,7 +347,7 @@ def plot_wrk(results_dir):
     # Update layout
     fig.update_layout(
         height=400 * len(results),
-        title_text="Benchmark Results for wrk (100 connections for 10s)",
+        title_text=f"Benchmark Results<br>(wrk {command_args}) ",
         barmode="group",
     )
 

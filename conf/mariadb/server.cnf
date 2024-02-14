@@ -1,0 +1,71 @@
+#
+# These groups are read by MariaDB server.
+# Use it for options that only the server (but not clients) should see
+#
+# See the examples of server my.cnf files in /usr/share/mysql/
+#
+
+# this is read by the standalone daemon and embedded servers
+[server]
+
+character-set-server  = utf8mb4
+collation-server      = utf8mb4_unicode_ci
+default_time_zone     = 'America/Sao_Paulo'
+
+max_connections                  = 128
+table_definition_cache           = 1000
+table_open_cache                 = 8000
+table_open_cache_instances       = 12
+join_buffer_size                 = 1M
+innodb_buffer_pool_size          = 4G
+innodb_log_file_size             = 2G
+performance_schema               = OFF
+skip_name_resolve                = ON
+innodb_flush_log_at_trx_commit   = 2
+innodb_flush_method              = O_DIRECT
+innodb_io_capacity               = 6000
+transaction_isolation            = READ-COMMITTED
+default_tmp_storage_engine       = aria
+aria_pagecache_buffer_size       = 268435440
+# enable query cache
+query_cache_type                 = 1
+query_cache_size                 = 16777216
+query_cache_min_res_unit 	 = 2048
+query_cache_limit 		 = 1048576
+
+# this is only for the mysqld standalone daemon
+[mysqld]
+
+#
+# * Galera-related settings
+#
+[galera]
+# Mandatory settings
+#wsrep_on=ON
+#wsrep_provider=
+#wsrep_cluster_address=
+#binlog_format=row
+#default_storage_engine=InnoDB
+#innodb_autoinc_lock_mode=2
+#
+# Allow server to accept connections on all interfaces.
+#
+#bind-address=0.0.0.0
+#
+# Optional setting
+#wsrep_slave_threads=1
+#innodb_flush_log_at_trx_commit=0
+
+# this is only for embedded server
+[embedded]
+
+# This group is only read by MariaDB servers, not by MySQL.
+# If you use the same .cnf file for MySQL and MariaDB,
+# you can put MariaDB-only options here
+[mariadb]
+
+# This group is only read by MariaDB-10.8 servers.
+# If you use the same .cnf file for MariaDB of different versions,
+# use this group for options that older servers don't understand
+[mariadb-10.8]
+

@@ -69,14 +69,17 @@ bash ./run-benchmark.sh
 
 ### 5. View the results:
 
-The benchmark report will be generated in the `results` directory.
+The benchmark report (logs and html files) will be generated in the `results` directory. Some examples of the outputted report/graphics:
+
+
 
 ## Customization:
 
-You can customize the benchmark by modifying the following files (not available yet):
+You can customize the benchmark by modifying the following files:
 
-- `benchmarks.php`: Define the PHP code to be benchmarked.
-- `configuration.json`: Configure the benchmark settings like iterations, concurrency, and frameworks.
+- `frameworks.conf`: Define all the frameworks you would like to be benchmarked.
+- `tests.conf`: Configure which benchmark test to run.
+- `commands.conf`: Your preferred command line options for each benchmark tool used.
 
 
 ## License:
