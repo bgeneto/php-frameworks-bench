@@ -7,11 +7,11 @@ docker compose build --parallel
 docker compose up -d
 
 # enter php docker container to install all required frameworks via composer
-docker exec -it php_fpm_fmbench composer create-project codeigniter4/appstarter codeigniter
-docker exec -it php_fpm_fmbench composer create-project symfony/skeleton:"7.0.*" symfony
-docker exec -it php_fpm_fmbench bash -c 'cd symfony; composer require symfony/twig-bundle'
-docker exec -it php_fpm_fmbench composer create-project laravel/laravel:"11.x-dev" laravel
-docker exec -it php_fpm_fmbench composer create-project pocketarc/codeigniter codeigniter3
+docker exec -it php_fpm_bench composer create-project codeigniter4/appstarter codeigniter
+docker exec -it php_fpm_bench composer create-project symfony/skeleton:"7.0.*" symfony
+docker exec -it php_fpm_bench bash -c 'cd symfony; composer require symfony/twig-bundle'
+docker exec -it php_fpm_bench composer create-project laravel/laravel:"11.x-dev" laravel
+docker exec -it php_fpm_bench composer create-project pocketarc/codeigniter codeigniter3
 
 # save current user id
 userid=$(id -u)

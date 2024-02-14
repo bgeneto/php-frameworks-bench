@@ -51,6 +51,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $route['default_controller'] = 'welcome';
 $route['404_override'] = '';
+
+$route['benchmarking/hello'] = 'bench/hello';
+$route['benchmarking/info'] = 'bench/info';
+
 $route['translate_uri_dashes'] = FALSE;
-$route['benchmarking/hello'] = 'benchcontroller/hello';
-$route['benchmarking/info'] = 'benchcontroller/info';
