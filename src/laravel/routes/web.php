@@ -18,9 +18,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/bechmarking/info', function () {
+Route::get('/benchmarking/info', function () {
     return view('info');
 });
 
-Route::get('/bechmarking/hello', [BenchController::class, 'hello']);
+Route::get('/benchmarking/hello', [BenchController::class, 'hello']);
 

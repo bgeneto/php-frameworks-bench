@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: php-fpm-bookworm:latest
-    container_name: php_fpm_fmbench
+    container_name: php_fpm_bench
     hostname: php-fpm
     environment:
       - CI_ENV=production
@@ -20,12 +20,12 @@ services:
 
   redis:
     image: clearlinux/redis
-    container_name: redis_fmbench
+    container_name: redis_bench
     hostname: redis
 
   nginx:
     image: clearlinux/nginx
-    container_name: nginx_fmbench
+    container_name: nginx_bench
     hostname: nginx
     depends_on:
       - php-fpm

@@ -11,7 +11,6 @@ docker exec -it php_fpm_fmbench composer create-project codeigniter4/appstarter 
 docker exec -it php_fpm_fmbench composer create-project symfony/skeleton:"7.0.*" symfony
 docker exec -it php_fpm_fmbench bash -c 'cd symfony; composer require symfony/twig-bundle'
 docker exec -it php_fpm_fmbench composer create-project laravel/laravel:"11.x-dev" laravel
-docker exec -it php_fpm_fmbench bash -c 'cd laravel; php artisan route:clear'
 docker exec -it php_fpm_fmbench composer create-project pocketarc/codeigniter codeigniter3
 
 # save current user id
