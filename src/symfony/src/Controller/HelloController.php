@@ -11,7 +11,8 @@ class HelloController extends AbstractController
     #[Route('/')]
 	public function index(): Response
 	{
-		return $this->render('welcome.html.twig');
+        $version = Symfony\Component\HttpKernel\Kernel::getVersion();
+		return $this->render('welcome.html.twig', ['version' => $version]);
 	}
 
     #[Route('/benchmarking/hello')]

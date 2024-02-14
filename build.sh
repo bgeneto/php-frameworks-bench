@@ -6,23 +6,26 @@ docker compose build --parallel
 # start all containers
 docker compose up -d
 
-# enter php docker container to install all required frameworks via composer
-docker exec -it -u $UID php_fpm_bench composer create-project codeigniter4/appstarter codeigniter
-docker exec -it -u $UID php_fpm_bench composer create-project symfony/skeleton:"7.0.*" symfony
-docker exec -it -u $UID php_fpm_bench bash -c 'cd symfony; composer require symfony/twig-bundle'
-docker exec -it -u $UID php_fpm_bench composer create-project laravel/laravel:"11.x-dev" laravel
-docker exec -it -u $UID php_fpm_bench composer create-project pocketarc/codeigniter codeigniter3
-
 # save current user id
 userid=$(id -u)
 userid=${userid%% *}
 
-# set the right permissions to www-data
-echo -e "We need 'sudo' to copy files and set the proper ownership:\n"
+# enter php docker container to install all required frameworks via composer
+docker exec -it -u $userid php_fpm_bench composer --no-cache create-project codeigniter4/appstarter codeigniter
+docker exec -it -u $userid php_fpm_bench composer --no-cache create-project pocketarc/codeigniter codeigniter3
+docker exec -it -u $userid php_fpm_bench composer --no-cache create-project symfony/skeleton:"7.0.*" symfony
+docker exec -it -u $userid php_fpm_bench bash -c 'cd symfony; composer --no-cache require symfony/twig-bundle'
+docker exec -it -u $userid php_fpm_bench composer --no-cache create-project laravel/laravel:"11.x-dev" laravel
 
 cp -r ./src/* ./www/html/
-chown -R $userid:33 ./www
-chmod -R g+w ./www
+
+# some frameworks requires write access to certain folders
+# since we can't chown without sudo, the only solution is to give everybody write permission.
+chmod -R o+w ./www/html/codeigniter/writable
+chmod -R o+w ./www/html/codeigniter3/application/logs
+chmod -R o+w ./www/html/codeigniter3/application/cache
+chmod -R o+w ./www/html/symfony/var
+chmod -R o+w ./www/html/laravel/storage
 
 # restart all containers (just in case)
 docker compose down && docker compose up -d
