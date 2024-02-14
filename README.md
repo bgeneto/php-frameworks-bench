@@ -71,7 +71,11 @@ bash ./run-benchmark.sh
 
 The benchmark report (logs and html files) will be generated in the `results` directory. Some examples of the outputted report/graphics:
 
+![image](https://github.com/bgeneto/php-frameworks-bench/assets/473074/8b4e0db8-3d1f-48cc-b54a-c4e372fd6bdf)
 
+![image](https://github.com/bgeneto/php-frameworks-bench/assets/473074/8e16e038-92aa-4db5-80d6-0d27d5a69fbc)
+
+![image](https://github.com/bgeneto/php-frameworks-bench/assets/473074/0c542ae4-bde6-4cb3-99f1-886c342e3bc0)
 
 ## Customization:
 
