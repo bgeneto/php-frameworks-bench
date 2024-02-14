@@ -33,7 +33,7 @@ git clone https://github.com/bgeneto/php-frameworks-bench
 
 ```bash
 cd php-frameworks-bench
-sh ./build.sh
+bash ./build.sh
 ```
 
 ### 3. Check the installation
@@ -63,15 +63,8 @@ If everything went fine, you should see a standard `phpinfo()` page for each add
 Now we are ready to run the benchmarks:
 
 ```
-./run-benchmark.sh [options]
+bash ./run-benchmark.sh
 ```
-
-Available options:
-
-- `--frameworks`: Comma-separated list of frameworks to benchmark (e.g., `laravel,symfony,codeigniter`).
-- `--iterations`: Number of iterations for each benchmark (default: 10).
-- `--concurrency`: Number of concurrent requests per iteration (default: 10).
-- `--help`: Display help message.
 
 
 ### 5. View the results:
@@ -80,7 +73,7 @@ The benchmark report will be generated in the `results` directory.
 
 ## Customization:
 
-You can customize the benchmark by modifying the following files:
+You can customize the benchmark by modifying the following files (not available yet):
 
 - `benchmarks.php`: Define the PHP code to be benchmarked.
 - `configuration.json`: Configure the benchmark settings like iterations, concurrency, and frameworks.

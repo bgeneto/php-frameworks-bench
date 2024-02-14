@@ -17,7 +17,8 @@ docker exec -it -u $userid php_fpm_bench composer --no-cache create-project symf
 docker exec -it -u $userid php_fpm_bench bash -c 'cd symfony; composer --no-cache require symfony/twig-bundle'
 docker exec -it -u $userid php_fpm_bench composer --no-cache create-project laravel/laravel:"11.x-dev" laravel
 
-cp -r ./src/* ./www/html/
+# copy our controllers, views, and routes 
+cp -rf ./src/* ./www/html/
 
 # some frameworks requires write access to certain folders
 # since we can't chown without sudo, the only solution is to give everybody write permission.
