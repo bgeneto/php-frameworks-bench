@@ -34,4 +34,12 @@ services:
       - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
       - 8080:80
+  
+  python:
+    image: bench/python3
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    container_name: python3_bench
+    hostname: python3
 
