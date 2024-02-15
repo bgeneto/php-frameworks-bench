@@ -15,8 +15,7 @@ docker exec -it -u $userid php_fpm_bench composer --no-cache create-project code
 docker exec -it -u $userid php_fpm_bench composer --no-cache create-project pocketarc/codeigniter codeigniter3
 docker exec -it -u $userid php_fpm_bench composer --no-cache create-project symfony/skeleton:"7.0.*" symfony
 docker exec -it -u $userid php_fpm_bench bash -c 'cd symfony; composer --no-cache --no-interaction require symfony/twig-bundle'
-docker exec -it -u $userid php_fpm_bench bash -c 'cd symfony; composer --no-cache --no-interaction --dev require symfony/maker-bundle'
-docker exec -it -u $userid php_fpm_bench bash -c 'cd symfony; composer --no-cache --no-interaction require orm'
+docker exec -it -u $userid php_fpm_bench bash -c 'cd symfony; composer --no-cache --no-interaction require symfony/orm-pack'
 docker exec -it -u $userid php_fpm_bench composer --no-cache create-project laravel/laravel:"11.x-dev" laravel
 
 # copy our controllers, views, and routes
