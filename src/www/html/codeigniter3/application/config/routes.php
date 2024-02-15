@@ -54,5 +54,6 @@ $route['404_override'] = '';
 
 $route['benchmarking/hello'] = 'bench/hello';
 $route['benchmarking/info'] = 'bench/info';
+$route['benchmarking/api'] = 'bench/api';
 
 $route['translate_uri_dashes'] = FALSE;

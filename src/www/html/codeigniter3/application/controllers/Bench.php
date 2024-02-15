@@ -15,4 +15,12 @@ class Bench extends CI_Controller {
     {
         phpinfo();
     }
+    
+    public function api()
+    {
+        $query = $this->db->get('films');
+        return $this->output->set_status_header(200)
+            ->set_content_type('application/json')
+            ->set_output(json_encode($query->result()));
+    }
 }

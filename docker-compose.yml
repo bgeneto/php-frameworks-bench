@@ -44,13 +44,13 @@ services:
     hostname: python3
 
   database:
-    image: clearlinux/mariadb:latest
+    image: mariadb:latest
     container_name: mariadb_bench
     hostname: mariadb
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW --skip-innodb-read-only-compressed --disable-log-bin
     volumes:
-      - ./conf/mariadb:/usr/share/defaults/mariadb/my.cnf.d
       - ./src/db/films.sql:/tmp/films.sql
+      - ./conf/mariadb/data:/var/lib/mysql:delegated
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     environment:

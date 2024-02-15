@@ -33,4 +33,4 @@ docker compose down && docker compose up -d
 
 # import database data
 sleep 6
-docker exec -i mariadb_bench mysql -uroot -p'your-very-long-passwd' bench < /tmp/films.sql
+docker exec -i mariadb_bench mariadb -ubench -pbench bench < /tmp/films.sql

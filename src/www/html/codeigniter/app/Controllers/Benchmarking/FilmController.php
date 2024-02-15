@@ -1,6 +1,6 @@
-<?php 
+<?php
 
-namespace App\Controllers;
+namespace App\Controllers\Benchmarking;
 
 use CodeIgniter\RESTful\ResourceController;
 use App\Models\FilmModel;
