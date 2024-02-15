@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `films` (
   `special_features` set('Trailers','Commentaries','Deleted Scenes','Behind the Scenes') DEFAULT NULL,
   `last_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`film_id`)
-) ENGINE=INNODB AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=INNODB AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `films` (`film_id`, `title`, `description`, `release_year`, `rental_duration`, `rental_rate`, `length`, `replacement_cost`, `rating`, `special_features`, `last_update`) VALUES
 	(1, 'ACADEMY DINOSAUR', '<p>A Epic Drama of a Feminist And a Mad Scientist who must Battle a Teacher in The Canadian Rockies</p>', '2006', 6, 0.99, 86, 20.99, 'PG', 'Deleted Scenes,Behind the Scenes', '2006-02-15 08:03:42'),

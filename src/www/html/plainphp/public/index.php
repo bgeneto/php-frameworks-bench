@@ -7,7 +7,7 @@ define('PAGE_DIR', ROOT_PATH . 'views/');
 
 // Define available pages
 $pages = [
-	'api',
+	'benchmarking/api',
 	'benchmarking/info',
 	'benchmarking/hello',
 	'home'

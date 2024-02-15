@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BenchController;
+use App\Http\Controllers\FilmController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,3 +25,4 @@ Route::get('/benchmarking/info', function () {
 
 Route::get('/benchmarking/hello', [BenchController::class, 'hello']);
 
+Route::get('/benchmarking/api', [FilmController::class, 'index']);
