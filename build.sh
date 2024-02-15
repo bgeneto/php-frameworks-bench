@@ -32,4 +32,5 @@ chmod -R o+w ./www/html/laravel/storage
 docker compose down && docker compose up -d
 
 # import database data
+sleep 6
 docker exec -i mariadb_bench mysql -uroot -p'your-very-long-passwd' bench < /tmp/films.sql
