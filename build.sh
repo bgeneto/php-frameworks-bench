@@ -34,4 +34,4 @@ docker compose down && docker compose up -d
 
 # import database data
 sleep 6
-docker exec -i mariadb_bench mariadb -ubench -pbench bench < /tmp/films.sql
+docker exec -i mariadb_bench mysql -ubench -pbench bench < /tmp/films.sql
