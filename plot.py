@@ -194,6 +194,7 @@ def plot_h2load(results_dir):
 def plot_wrk2(results_dir):
     # Prepare an empty DataFrame to store all latency data
     latency_data = pd.DataFrame()
+    command_args = ""
 
     # Loop through each file in the logs directory
     for filename in os.listdir(results_dir):

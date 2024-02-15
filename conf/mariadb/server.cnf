@@ -10,7 +10,6 @@
 
 character-set-server  = utf8mb4
 collation-server      = utf8mb4_unicode_ci
-default_time_zone     = 'America/Sao_Paulo'
 
 max_connections                  = 128
 table_definition_cache           = 1000

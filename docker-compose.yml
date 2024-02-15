@@ -50,10 +50,11 @@ services:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW --skip-innodb-read-only-compressed --disable-log-bin
     volumes:
       - ./conf/mariadb:/usr/share/defaults/mariadb/my.cnf.d
+      - ./src/db/films.sql:/tmp/films.sql
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     environment:
-      - MYSQL_ROOT_PASSWORD=verydifficultpasswd
+      - MYSQL_ROOT_PASSWORD=your-very-long-passwd
       - MYSQL_DATABASE=bench
       - MYSQL_USER=bench
       - MYSQL_PASSWORD=bench

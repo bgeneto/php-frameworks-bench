@@ -17,8 +17,8 @@ docker exec -it -u $userid php_fpm_bench composer --no-cache create-project symf
 docker exec -it -u $userid php_fpm_bench bash -c 'cd symfony; composer --no-cache require symfony/twig-bundle'
 docker exec -it -u $userid php_fpm_bench composer --no-cache create-project laravel/laravel:"11.x-dev" laravel
 
-# copy our controllers, views, and routes 
-cp -rf ./src/* ./www/html/
+# copy our controllers, views, and routes
+cp -rf ./src/www/html/* ./www/html/
 
 # some frameworks requires write access to certain folders
 # since we can't chown without sudo, the only solution is to give everybody write permission.
@@ -30,3 +30,6 @@ chmod -R o+w ./www/html/laravel/storage
 
 # restart all containers (just in case)
 docker compose down && docker compose up -d
+
+# import database data
+docker exec -i mariadb_bench mysql -uroot -p'your-very-long-passwd' bench < /tmp/films.sql
