@@ -40,6 +40,8 @@ services:
       dockerfile: Dockerfile.python
     container_name: python3_bench
     hostname: python3
+    volumes:
+      - ./plot.py:/usr/src/app/plot.py
 
   database:
     image: mariadb:10.2

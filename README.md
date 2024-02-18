@@ -9,7 +9,7 @@ This project allows you to compare the performance of popular PHP frameworks lik
 
 ## Supported Platforms:
 
-- Windows (WSL2)
+- Windows (WSL 2 backend)
 - macOS
 - Linux
 

@@ -1,14 +1,18 @@
+"""
+Filename: plot.py
+Author: Bernhard Enders (bgeneto)
+Date: 2024-02-15
+Description: Generates plots/charts from the output of wrk, wrk2 and h2load log files.
+"""
+
+import json
 import os
 import re
-import warnings
 
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore", category=DeprecationWarning)
 
 
 def parse_logfile(filename):
@@ -26,7 +30,7 @@ def parse_logfile(filename):
                 # Extract requests per second value
                 req_per_sec = float(line.split(", ")[1].split("req/s")[0])
                 return req_per_sec, command_args
-    raise ValueError("Could not find relevant data in log file")
+    raise ValueError(f"Could not find relevant data in log file: {filename}")
 
 
 def extract_info_from_filename(filename):
@@ -119,64 +123,79 @@ def plot_h2load(results_dir):
         if f.endswith(".h2load.log")
     ]
 
-    # filenames are in the format: laravel.bench.info.h2load.log, symfony.bench.hello.h2load.log
-    # we want to extract the framework name and the benchmark name by splitting the filename
     frameworks = []
-    benchmarks = []
+    benchmark_names = []
     for filename in filenames:
         framework_name, benchmark_name = extract_info_from_filename(filename)
         frameworks.append(framework_name)
-        benchmarks.append(benchmark_name)
+        benchmark_names.append(benchmark_name)
 
-    labels = []
     req_per_sec_values = []
     for i, filename in enumerate(filenames):
-        labels.append(frameworks[i] + " - " + benchmarks[i])
-        rps, command_args = parse_logfile(filename)
+        try:
+            rps, command_args = parse_logfile(filename)
+        except ValueError as e:
+            print(f"Error: {e}")
+            continue
         req_per_sec_values.append(rps)
 
-    # Initialize dictionaries to hold requests per second values for each benchmark type
-    req_per_sec_by_bench = {"Info": [], "Hello": []}
-    labels_by_bench = {"Info": [], "Hello": []}
+    # Initialize dictionaries to hold requests per second values and labels for each benchmark type
+    req_per_sec_by_bench = {bench: [] for bench in benchmark_names}
+    labels_by_bench = {bench: [] for bench in benchmark_names}
 
     # Populate the dictionaries
-    for i, filename in enumerate(filenames):
-        bench_type = benchmarks[i]
+    for i, bench_type in enumerate(benchmark_names):
         label = frameworks[i]
         req_per_sec = req_per_sec_values[i]
-        req_per_sec_by_bench[bench_type].append(req_per_sec)
-        labels_by_bench[bench_type].append(label)
+        if bench_type in req_per_sec_by_bench:
+            req_per_sec_by_bench[bench_type].append(req_per_sec)
+            labels_by_bench[bench_type].append(label)
 
     # Sort the data by requests per second in descending order
-    for bench_type in req_per_sec_by_bench:
-        req_per_sec_by_bench[bench_type], labels_by_bench[bench_type] = zip(
-            *sorted(
+    for bench_type in benchmark_names:
+        if bench_type in req_per_sec_by_bench:
+            sorted_pairs = sorted(
                 zip(req_per_sec_by_bench[bench_type], labels_by_bench[bench_type]),
                 reverse=True,
             )
-        )
+            req_per_sec_by_bench[bench_type], labels_by_bench[bench_type] = (
+                zip(*sorted_pairs) if sorted_pairs else ([], [])
+            )
 
-    # Create subplots: one row, two columns
+    # Remove duplicates from the benchmark names list
+    benchmark_names = list(set(benchmark_names))
+
+    # Create subplots dynamically based on the number of benchmarks
+    cols = len(benchmark_names)
+    if cols == 0:
+        print("No h2load log files found.")
+        return
     fig = make_subplots(
-        rows=1, cols=2, subplot_titles=("Info Benchmark", "Hello Benchmark")
+        rows=1,
+        cols=cols,
+        subplot_titles=[f"{bench} Benchmark" for bench in benchmark_names],
     )
 
-    # Add percentage to each bar, taking the maximum value as 100%
-    for benchmark_type in ["Info", "Hello"]:
-        percentages = calculate_percentages(req_per_sec_by_bench[benchmark_type])
-        text_values = [f"{percentage:.2f}%" for percentage in percentages]
+    # Add traces for each benchmark
+    for i, benchmark_type in enumerate(benchmark_names, start=1):
+        if (
+            benchmark_type in req_per_sec_by_bench
+            and req_per_sec_by_bench[benchmark_type]
+        ):
+            percentages = calculate_percentages(req_per_sec_by_bench[benchmark_type])
+            text_values = [f"{percentage:.2f}%" for percentage in percentages]
 
-        fig.add_trace(
-            go.Bar(
-                x=labels_by_bench[benchmark_type],
-                y=req_per_sec_by_bench[benchmark_type],
-                name=benchmark_type,
-                text=text_values,
-                textposition="auto",
-            ),
-            row=1,
-            col=1 if benchmark_type == "Info" else 2,
-        )
+            fig.add_trace(
+                go.Bar(
+                    x=labels_by_bench[benchmark_type],
+                    y=req_per_sec_by_bench[benchmark_type],
+                    name=benchmark_type,
+                    text=text_values,
+                    textposition="auto",
+                ),
+                row=1,
+                col=i,
+            )
 
     # Update layout to adjust titles and axis labels
     fig.update_layout(
@@ -245,6 +264,10 @@ def plot_wrk2(results_dir):
             # Append the data to the main DataFrame
             latency_data = pd.concat([latency_data, df], ignore_index=True)
 
+    if len(latency_data) == 0:
+        print("No wrk2 log files found.")
+        return
+
     # Add two new columns to the DataFrame for bench_name and framework_name
     latency_data["BenchName"] = latency_data["File"].apply(
         lambda x: x.split(".")[2].capitalize()
@@ -274,10 +297,17 @@ def plot_wrk2(results_dir):
         print(f"Latency charts for {benchmark_name} exported to {export_file}")
 
 
+def convert_to_number(value):
+    if "k" in value:
+        return float(value.replace("k", "")) * 1000
+    else:
+        return float(value)
+
+
 def plot_wrk(results_dir):
     # Regular expression patterns to extract data
-    latency_pattern = re.compile(r"Latency\s+(\d+\.\d+)ms")
-    req_sec_pattern = re.compile(r"Req/Sec\s+(\d+\.\d+k?)")
+    latency_pattern = re.compile(r"Latency\s+(\d+\.\d+m?s)")
+    req_sec_pattern = re.compile(r"Req/Sec\s+(\d+\.\d+k?)?")
 
     # Data structure to hold the parsed results
     results = {}
@@ -293,11 +323,17 @@ def plot_wrk(results_dir):
                 # The first line of the file contains the wrk command used
                 command_args = content.split("\n")[0]
                 # Extract the average latency and requests per second
-                avg_latency = float(latency_pattern.search(content).group(1))
+                avg_latency = latency_pattern.search(content).group(1)
                 avg_req_sec = req_sec_pattern.search(content).group(1)
                 # Convert avg_req_sec to requests/sec if the value ends with 'k'
                 if "k" in str(avg_req_sec):
                     avg_req_sec = float(avg_req_sec.replace("k", "")) * 1000
+                else:
+                    avg_req_sec = float(avg_req_sec)
+                if "ms" in str(avg_latency):
+                    avg_latency = float(avg_latency.replace("ms", ""))
+                else:
+                    avg_latency = float(avg_latency.replace("s", "")) * 1000
                 if benchmark_name not in results:
                     results[benchmark_name] = {
                         "frameworks": [],
@@ -308,6 +344,10 @@ def plot_wrk(results_dir):
                 results[benchmark_name]["latencies"].append(avg_latency)
                 results[benchmark_name]["req_secs"].append(avg_req_sec)
 
+    if len(results) == 0:
+        print("No wrk log files found.")
+        return
+
     # Create subplots
     fig = make_subplots(
         rows=2,
@@ -317,9 +357,22 @@ def plot_wrk(results_dir):
 
     # order latencies in ascending and req_secs descending order
     for benchmark_name, data in results.items():
-        data["framework"], data["latencies"], data["req_secs"] = zip(
+        # Convert strings to numerical values
+        # data["latencies"] = [convert_to_number(value) for value in data["latencies"]]
+        # data["req_secs"] = [convert_to_number(value) for value in data["req_secs"]]
+
+        # Sort the data by latency in ascending order
+        (
+            data["frameworks"],
+            data["latencies"],
+            data["req_secs"],
+        ) = zip(
             *sorted(
-                zip(data["frameworks"], data["latencies"], data["req_secs"]),
+                zip(
+                    data["frameworks"],
+                    data["latencies"],
+                    data["req_secs"],
+                ),
                 key=lambda x: x[1],
             )
         )
@@ -328,13 +381,21 @@ def plot_wrk(results_dir):
     for benchmark_name, data in results.items():
         # Add the latency bar chart
         fig.add_trace(
-            go.Bar(x=data["framework"], y=data["latencies"], name="Avg Latency (ms)"),
+            go.Bar(
+                x=data["frameworks"],
+                y=data["latencies"],
+                name="Avg Latency (ms)",
+            ),
             row=1,
             col=col,
         )
         # Add the requests per second bar chart
         fig.add_trace(
-            go.Bar(x=data["framework"], y=data["req_secs"], name="Avg Req/Sec"),
+            go.Bar(
+                x=data["frameworks"],
+                y=data["req_secs"],
+                name="Avg Req/Sec",
+            ),
             row=2,
             col=col,
         )
@@ -358,6 +419,133 @@ def plot_wrk(results_dir):
     print(f"wrk charts exported to {export_file}")
 
 
+def extract_k6_data(framework_name, benchmark_name):
+    """Extracts avg and rate data from a log file"""
+
+    # convert framework_name and benchmark_name to lowercase
+    framework_name = framework_name.lower()
+    benchmark_name = benchmark_name.lower()
+
+    file_path = os.path.join(
+        "/results", f"{framework_name}.bench.{benchmark_name}.k6.log"
+    )
+
+    with open(file_path, "r") as f:
+        log_data = json.load(f)
+
+    try:
+        avg_duration = log_data["metrics"]["http_req_duration{expected_response:true}"][
+            "avg"
+        ]
+        req_rate = log_data["metrics"]["http_reqs"]["rate"]
+    except KeyError:
+        print(f"Error: Could not find relevant data in log file: {file_path}")
+        return None, None
+
+    return avg_duration, req_rate
+
+
+def gather_k6_data(results_dir="results"):
+    """Gathers data from all log files"""
+    data = {}
+    for filename in os.listdir(results_dir):
+        if filename.endswith(".k6.log"):
+            framework_name, benchmark_name = extract_info_from_filename(filename)
+            if benchmark_name not in data:
+                data[benchmark_name] = {
+                    "frameworks": [],
+                    "avg_durations": [],
+                    "req_rates": [],
+                }
+
+            avg_duration, req_rate = extract_k6_data(framework_name, benchmark_name)
+            if avg_duration is None or req_rate is None:
+                continue
+            data[benchmark_name]["frameworks"].append(framework_name)
+            data[benchmark_name]["avg_durations"].append(avg_duration)
+            data[benchmark_name]["req_rates"].append(req_rate)
+
+    return data
+
+
+def plot_k6(results_dir):
+    """Creates bar charts using Plotly"""
+    data = gather_k6_data(results_dir)
+    if data is None:
+        print("No k6 log files found.")
+        return
+    metrics = ["Avg Duration (ms)", "Req Rate (req/s)"]
+    num_test_names = len(data)
+
+    # Order avg_durations in ascending and req_rates in descending order for each benchmark_name
+    for test_name in data:
+        # Sort the data by avg_durations in ascending order
+        (
+            data[test_name]["frameworks"],
+            data[test_name]["avg_durations"],
+            data[test_name]["req_rates"],
+        ) = zip(
+            *sorted(
+                zip(
+                    data[test_name]["frameworks"],
+                    data[test_name]["avg_durations"],
+                    data[test_name]["req_rates"],
+                ),
+                key=lambda x: x[1],
+            )
+        )
+        # Sort the data by req_rates in descending order
+        (
+            data[test_name]["frameworks"],
+            data[test_name]["avg_durations"],
+            data[test_name]["req_rates"],
+        ) = zip(
+            *sorted(
+                zip(
+                    data[test_name]["frameworks"],
+                    data[test_name]["avg_durations"],
+                    data[test_name]["req_rates"],
+                ),
+                key=lambda x: x[2],
+                reverse=True,
+            )
+        )
+
+    fig = make_subplots(
+        rows=2,
+        cols=num_test_names,
+        subplot_titles=list(f"{x} bench" for x in data.keys()),
+    )
+
+    for i, test_name in enumerate(data):
+        test_data = data[test_name]
+
+        for j, metric in enumerate(metrics):
+            y_data = (
+                test_data["avg_durations"]
+                if metric == "Avg Duration (ms)"
+                else test_data["req_rates"]
+            )
+
+            fig.add_trace(
+                go.Bar(x=test_data["frameworks"], y=y_data, name=metric),
+                row=j + 1,
+                col=i + 1,
+            )
+
+            # Add y-axis titles
+            fig.update_yaxes(title_text="Avg Duration (ms)", row=1, col=i + 1)
+            fig.update_yaxes(title_text="Req Rates (req/s)", row=2, col=i + 1)
+
+    # Customize layout (optional)
+    fig.update_layout(height=1080, title_text="k6 benchmark results")
+
+    # Export to a single HTML file
+    export_file = "/results/k6_charts.html"
+    fig.write_html(export_file)
+    print(f"k6 bar charts exported to {export_file}")
+
+
 if __name__ == "__main__":
     # Specify the directory containing the log files
     output_dir = "/results"
@@ -367,3 +555,4 @@ if __name__ == "__main__":
     plot_h2load(output_dir)
     plot_wrk(output_dir)
     plot_wrk2(output_dir)
+    plot_k6(output_dir)

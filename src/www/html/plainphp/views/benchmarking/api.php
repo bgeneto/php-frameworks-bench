@@ -18,6 +18,7 @@ try {
     // Retrieve all rows from a table
     $stmt = $pdo->query('SELECT * FROM films');
     $rows = $stmt->fetchAll();
+    $pdo = null;
 
     // Echo the rows as application/json
     header('Content-Type: application/json');
