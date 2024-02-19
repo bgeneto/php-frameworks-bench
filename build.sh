@@ -17,6 +17,9 @@ docker exec -it -u $userid php_fpm_bench composer --no-cache create-project symf
 docker exec -it -u $userid php_fpm_bench bash -c 'cd symfony; composer --no-cache --no-interaction require symfony/twig-bundle'
 docker exec -it -u $userid php_fpm_bench bash -c 'cd symfony; composer --no-cache --no-interaction require symfony/orm-pack'
 docker exec -it -u $userid php_fpm_bench composer --no-cache create-project laravel/laravel:"11.x-dev" laravel
+docker exec -it -u $userid php_fpm_bench composer --no-cache create-project laravel/laravel:"10.x" octane
+docker exec -it -u $userid php_fpm_bench bash -c 'cd octane; composer --no-cache --no-interaction require laravel/octane'
+docker exec -it -u $userid php_fpm_bench bash -c 'cd octane; php artisan octane:install --server=swoole'
 
 # copy our controllers, views, and routes
 cp -rf ./src/www/html/* ./www/html/
@@ -28,6 +31,7 @@ chmod -R o+w ./www/html/codeigniter3/application/logs
 chmod -R o+w ./www/html/codeigniter3/application/cache
 chmod -R o+w ./www/html/symfony/var
 chmod -R o+w ./www/html/laravel/storage
+chmod -R o+w ./www/html/octane/storage
 
 # restart all containers (just in case)
 docker compose down && docker compose up -d

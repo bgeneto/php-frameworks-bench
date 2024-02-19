@@ -8,6 +8,7 @@ RUN apt update && apt install -y \
         libpng-dev iproute2 iputils-ping zlib1g-dev libicu-dev \
         libcurl4-openssl-dev libonig-dev
 RUN sh -c 'pecl list | grep -q redis || (pecl install redis && docker-php-ext-enable redis)'
+RUN sh -c 'pecl list | grep -q swoole || (pecl install swoole && docker-php-ext-enable swoole)'
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-configure zip
 RUN docker-php-ext-install -j$(nproc) gd mysqli intl zip pdo gettext pdo_mysql bcmath
