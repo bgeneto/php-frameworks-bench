@@ -11,15 +11,14 @@
 # Output folder
 output=./results
 
-# Read tests from tests.conf file
-tests=$(cat tests.conf)
+# Read benchmarks (end points) from benchmarks.conf file
+benchmarks=$(cat benchmarks.conf)
 
 # Read domains from frameworks.conf file and append .bench to each
-#domains=$(sed 's/$/.bench/' frameworks.conf | tr '\n' ' ')
 domains=$(sed '/^#/d' frameworks.conf | sed 's/$/.bench/' | tr '\n' ' ')
 
 # Read commands from benchmarks.conf file, skipping empty lines and comments
-commands=$(sed '/^$/d; /^#/d' benchmarks.conf)
+commands=$(sed '/^$/d; /^#/d' tests.conf)
 
 # configure the k6 script.js
 function replace_uri_in_js() {
@@ -37,7 +36,7 @@ function replace_uri_in_js() {
 }
 
 # Main loop
-for test in $tests; do
+for test in $benchmarks; do
     for domain in $domains; do
         while IFS= read -r line; do
             # Extract the command and options

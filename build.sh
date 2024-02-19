@@ -36,12 +36,14 @@ chmod -R o+w ./www/html/symfony/var
 chmod -R o+w ./www/html/laravel/storage
 chmod -R o+w ./www/html/octane/storage
 
-# remove the comment in #command:
-sed -i 's/^\([[:space:]]*\)#command:/\1command:/' "./docker-compose.yml"
-
 # restart all containers (after changing the command)
 docker compose down && docker compose up -d
 
-# import database data
+# for containers to be ready
 sleep 5
+
+# start octane server
+docker exec php_fpm_bench bash -c "cd octane; php artisan octane:start --host 0.0.0.0 &"
+
+# import database data
 docker exec -i mariadb_bench mysql -ubench -pbench bench < ./src/db/films.sql

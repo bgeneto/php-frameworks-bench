@@ -17,7 +17,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    #command: php octane/artisan octane:start --host=0.0.0.0 --port=8000
 
   nginx:
     image: clearlinux/nginx

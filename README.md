@@ -50,6 +50,7 @@ To check if everything installed correctly and is working as expected, you may n
 http://codeigniter.bench:8080/benchmarking/info
 http://codeigniter3.bench:8080/benchmarking/info
 http://laravel.bench:8080/benchmarking/info
+http://octane.bench:8080/benchmarking/info
 http://symfony.bench:8080/benchmarking/info
 http://plainphp.bench:8080/benchmarking/info
 ```
@@ -91,9 +92,9 @@ You can customize the benchmark by modifying the following files:
   laravel
   ```
 
-- `tests.conf`: Configure which benchmark test to run (available tests: `info hello api`).
+- `benchmarks.conf`: Configure which benchmark test to run (available: `info hello api`).
 
-- `benchmarks.conf`: Selects your desired benchmark tool, along with their command line options. You can also comment a benchmark tool you would not like to run (the only tool that will always run is the k6). The example below will run only the `wrk` (and `k6`) benchmarks:
+- `tests.conf`: Selects your desired benchmark testing tool, along with their command line options. You can also comment a benchmark tool you would not like to run (the only tool that will always run is the k6). The example below will run only the `wrk` (and `k6`) benchmarks:
 
   ```
   # run h2load RPS test
@@ -103,8 +104,6 @@ You can customize the benchmark by modifying the following files:
   # run wrk2 latency test with constant RPS (requires at least 30s to be accurate!)
   #wrk2=-R 500 -L -d 30s -t 10 -c 100
   ```
-
-  
 
 Other important settings are available in the `conf` folder. For example, if you would like to turn off OPcache, comment the respective line in the file `conf/php/conf.d/docker-php-extensions.ini` : 
 
