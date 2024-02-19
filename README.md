@@ -41,7 +41,7 @@ bash ./build.sh
 To check if everything installed correctly and is working as expected, you may need to edit your hosts file (``/etc/hosts` or `C:\Windows\System32\drivers\etc`) and add a line like this:
 
 ```
-127.0.0.1      laravel.bench codeigniter.bench codeigniter3.bench symfony.bench plainphp.bench
+127.0.0.1       laravel.bench octane.bench codeigniter.bench codeigniter3.bench symfony.bench plainphp.bench
 ```
 
 (or use a valid IP) Then open your preferred browser and navigate to: 
@@ -132,7 +132,7 @@ extension=redis.so
   Then you need to add the line below to your `/etc/hosts` (or `C:\Windows\System32\drivers\etc`):
 
   ```
-  127.0.0.1      laravel.bench codeigniter.bench codeigniter3.bench symfony.bench plainphp.bench
+  127.0.0.1      laravel.bench octane.bench codeigniter.bench codeigniter3.bench symfony.bench plainphp.bench
   ```
 
   And `./run-benchmark.sh` again. 
@@ -186,6 +186,16 @@ extension=redis.so
 - You can change k6 settings using the template file available in `k6/script.template.js` 
 
 - php-fpm settings are exposed in `conf/php-fpm.d/www.conf` if you want to change my defaults.
+
+- If Laravel Octane is not working for you, try to run those commands inside the php container: 
+
+  ```
+  docker exec -it php_fpm_bench bash
+  cd octane
+  php artisan octane:install --server=swoole
+  ```
+
+  
 
 
 ## License:
