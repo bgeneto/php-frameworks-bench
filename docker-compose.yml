@@ -18,11 +18,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  redis:
-    image: clearlinux/redis
-    container_name: redis_bench
-    hostname: redis
-
   nginx:
     image: clearlinux/nginx
     container_name: nginx_bench
@@ -40,8 +35,6 @@ services:
       dockerfile: Dockerfile.python
     container_name: python3_bench
     hostname: python3
-    volumes:
-      - ./plot.py:/usr/src/app/plot.py
 
   database:
     image: mariadb:10.2

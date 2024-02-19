@@ -81,9 +81,25 @@ The benchmark report (logs and html files) will be generated in the `results` di
 
 You can customize the benchmark by modifying the following files:
 
-- `frameworks.conf`: Define all the frameworks you would like to be benchmarked.
-- `tests.conf`: Configure which benchmark test to run.
-- `commands.conf`: Your preferred command line options for each benchmark tool used.
+- `frameworks.conf`: Define all the (installed) frameworks you would like to be benchmarked.
+- `tests.conf`: Configure which benchmark test to run (available tests: hello info api).
+- `benchmarks.conf`: Selects your desired benchmark tool, along with their command line options.
+
+Other important settings are available in the `conf` folder. For example, if you would like to turn off OPcache, comment the respective line in the file `conf/php/conf.d/docker-php-extensions.ini` : 
+
+```ini
+extension=zip
+extension=gd
+extension=gettext
+extension=intl
+extension=bcmath
+extension=mysqli
+extension=pdo_mysql
+extension=redis.so
+#zend_extension=opcache
+```
+
+
 
 
 ## License:
