@@ -105,6 +105,10 @@ class FilePlotter:
             sorted(self.total_files.items(), key=lambda item: item[1], reverse=True)
         )
 
+        if len(total_files) == 0:
+            print("No framework files found.")
+            return
+
         # Calculate the percentages
         max_value = max(total_files.values())
         percentages = [
@@ -565,6 +569,9 @@ class K6Plotter:
             return
         metrics = ["Avg Duration (ms)", "Req Rate (req/s)"]
         num_test_names = len(data)
+        if num_test_names == 0:
+            print("No k6 log files found.")
+            return
 
         fig = make_subplots(
             rows=2,
@@ -609,8 +616,10 @@ class K6Plotter:
                     )
 
             # Add y-axis titles
-            fig.update_yaxes(title_text="Avg Duration (ms)", row=1, col=i + 1)
-            fig.update_yaxes(title_text="Req Rates (req/s)", row=2, col=i + 1)
+            fig.update_yaxes(
+                title_text="Avg. Duration / Latency (ms)", row=1, col=i + 1
+            )
+            fig.update_yaxes(title_text="Req. Rates (req/s)", row=2, col=i + 1)
 
         # Customize layout (optional)
         fig.update_layout(
@@ -627,8 +636,18 @@ class K6Plotter:
 
 
 if __name__ == "__main__":
-    # Specify the directory containing the log files
-    output_dir = "/results"
+    # Dockerfile.python work directory
+    work_dir = "/usr/src/app"
+
+    # Directory containing the log files
+    output_dir = work_dir + os.sep + "/results"
+
+    # Check if the output directory exists
+    if not os.path.exists(output_dir):
+        print(f"Error: Output directory {output_dir} not found.")
+        exit(1)
+
+    # Exclude the following directories from the count
     counter = FileCounter("/www/html", ["storage", "var", "logs", "cache", "writable"])
     total_files = counter.count_files()
 

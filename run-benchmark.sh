@@ -72,6 +72,7 @@ for test in $tests; do
             # Display test info
             echo ""
             echo "..:: Running $cmd tests at http://$domain:8080/benchmarking/$test ::.."
+            echo ""
 
             # Execute the docker command
             docker run $docker_options -t $image $cmd_options $url | tee -a "$output/$domain.$test.$cmd.log" || true
@@ -89,6 +90,7 @@ for test in $tests; do
         #docker run $docker_options -t $image $cmd_options | tee -a "$output/$domain.$test.$cmd.log"
         echo ""
         echo "..:: Running k6 tests at http://$domain:8080/benchmarking/$test ::.."
+        echo ""
         docker run $docker_options $image run --summary-export /results/$domain.$test.$cmd.log - <k6/script.js || true
         sleep 5
     done
