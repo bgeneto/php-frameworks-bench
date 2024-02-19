@@ -96,4 +96,4 @@ for test in $benchmarks; do
 done
 
 # plot the results to html file
-docker run --rm -v ./www:/www -v ./results:/results bench/python3 /usr/src/app/plot.py
+docker run --rm -v ./:/usr/src/app bench/python3 /usr/src/app/plot.py
