@@ -10,6 +10,9 @@ docker compose up -d
 userid=$(id -u)
 userid=${userid%% *}
 
+# wait for containers to be ready
+sleep 5
+
 # enter php docker container to install all required frameworks via composer
 docker exec -it -u $userid php_fpm_bench composer --no-cache create-project codeigniter4/appstarter codeigniter
 docker exec -it -u $userid php_fpm_bench composer --no-cache create-project pocketarc/codeigniter codeigniter3
@@ -33,9 +36,12 @@ chmod -R o+w ./www/html/symfony/var
 chmod -R o+w ./www/html/laravel/storage
 chmod -R o+w ./www/html/octane/storage
 
-# restart all containers (just in case)
+# remove the comment in #command:
+sed -i '/^#command:/s/^#//' "./docker-compose.yml"
+
+# restart all containers (after changing the command)
 docker compose down && docker compose up -d
 
 # import database data
-sleep 6
+sleep 5
 docker exec -i mariadb_bench mysql -ubench -pbench bench < ./src/db/films.sql
