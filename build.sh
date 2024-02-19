@@ -37,7 +37,7 @@ chmod -R o+w ./www/html/laravel/storage
 chmod -R o+w ./www/html/octane/storage
 
 # remove the comment in #command:
-sed -i '/^#command:/s/^#//' "./docker-compose.yml"
+sed -i 's/^\([[:space:]]*\)#command:/\1command:/' "./docker-compose.yml"
 
 # restart all containers (after changing the command)
 docker compose down && docker compose up -d
