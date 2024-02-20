@@ -22,7 +22,8 @@ docker exec -it -u $userid php_fpm_bench bash -c 'cd symfony; composer --no-cach
 docker exec -it -u $userid php_fpm_bench composer --no-cache create-project laravel/laravel:"11.x-dev" laravel
 docker exec -it -u $userid php_fpm_bench composer --no-cache create-project laravel/laravel:"10.x" octane
 docker exec -it -u $userid php_fpm_bench bash -c 'cd octane; composer --no-cache --no-interaction require laravel/octane'
-docker exec -it -u $userid php_fpm_bench bash -c 'cd octane; php artisan octane:install --server=swoole'
+#docker exec -it -u $userid php_fpm_bench bash -c 'cd octane; php artisan octane:install --server=swoole'
+docker exec -it -u $userid php_fpm_bench bash -c 'cd octane; php artisan octane:install --server=roadrunner --no-interaction'
 
 # copy our controllers, views, and routes
 cp -rf ./src/www/html/* ./www/html/
