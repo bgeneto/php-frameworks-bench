@@ -42,8 +42,5 @@ docker compose down && docker compose up -d
 # for containers to be ready
 sleep 5
 
-# start octane server
-docker exec php_fpm_bench bash -c "cd octane; php artisan octane:start --host 0.0.0.0 &"
-
 # import database data
 docker exec -i mariadb_bench mysql -ubench -pbench bench < ./src/db/films.sql
