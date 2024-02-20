@@ -139,7 +139,7 @@ class FilePlotter:
         )
 
         # Export to a single HTML file
-        export_file = "/results/framework-size-chart.html"
+        export_file = output_dir + "framework-size-chart.html"
         fig.write_html(export_file)
         print(f"Framework size bar charts exported to {export_file}")
 
@@ -255,7 +255,7 @@ class H2LoadPlotter:
         )
 
         # Export to a single HTML file
-        export_file = "/results/h2load-charts.html"
+        export_file = work_dir + "h2load-charts.html"
         fig.write_html(export_file)
         print(f"h2load bar charts exported to {export_file}")
 
@@ -349,7 +349,7 @@ class Wrk2Plotter:
             fig.update_layout(title={"font": dict(size=20)})
 
             # Export the plot to a separate HTML file for each bench_name
-            export_file = f"/results/wrk2-{benchmark_name}-charts.html"
+            export_file = work_dir + f"wrk2-{benchmark_name}-charts.html"
             fig.write_html(export_file)
             print(f"wrk2 charts for {benchmark_name} exported to {export_file}")
 
@@ -485,7 +485,7 @@ class WrkPlotter:
         )
 
         # Export to HTML
-        export_file = f"/results/wrk-charts.html"
+        export_file = work_dir + f"wrk-charts.html"
         fig.write_html(export_file)
         print(f"wrk charts exported to {export_file}")
 
@@ -503,7 +503,7 @@ class K6DataExtractor:
         benchmark_name = self.benchmark_name.lower()
 
         file_path = os.path.join(
-            "/results", f"{framework_name}.bench.{benchmark_name}.k6.log"
+            work_dir, f"{framework_name}.bench.{benchmark_name}.k6.log"
         )
 
         with open(file_path, "r") as f:
@@ -524,7 +524,7 @@ class K6DataExtractor:
 
 
 class K6DataGatherer:
-    def __init__(self, results_dir="results"):
+    def __init__(self, results_dir):
         self.results_dir = results_dir
 
     def gather_k6_data(self):
@@ -630,7 +630,7 @@ class K6Plotter:
         )
 
         # Export to a single HTML file
-        export_file = "/results/k6-charts.html"
+        export_file = work_dir + "k6-charts.html"
         fig.write_html(export_file)
         print(f"k6 bar charts exported to {export_file}")
 
@@ -640,7 +640,7 @@ if __name__ == "__main__":
     work_dir = "/usr/src/app"
 
     # Directory containing the log files
-    output_dir = work_dir + os.sep + "/results"
+    output_dir = work_dir + "/results/"
 
     # Check if the output directory exists
     if not os.path.exists(output_dir):
