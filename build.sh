@@ -20,7 +20,7 @@ docker exec -it -u $userid php_fpm_bench composer --no-cache create-project symf
 docker exec -it -u $userid php_fpm_bench bash -c 'cd symfony; composer --no-cache --no-interaction require symfony/twig-bundle'
 docker exec -it -u $userid php_fpm_bench bash -c 'cd symfony; composer --no-cache --no-interaction require symfony/orm-pack'
 docker exec -it -u $userid php_fpm_bench composer --no-cache create-project laravel/laravel:"11.x-dev" laravel
-docker exec -it -u $userid php_fpm_bench composer --no-cache create-project laravel/laravel:"10.x" octane
+docker exec -it -u $userid php_fpm_bench composer --no-cache create-project laravel/laravel:"11.x-dev" octane
 docker exec -it -u $userid php_fpm_bench bash -c 'cd octane; composer --no-cache --no-interaction require laravel/octane'
 #docker exec -it -u $userid php_fpm_bench bash -c 'cd octane; php artisan octane:install --server=swoole --no-interaction'
 docker exec -it -u $userid php_fpm_bench bash -c 'cd octane; composer --no-cache --no-interaction require spiral/roadrunner-cli spiral/roadrunner-http'
