@@ -45,4 +45,23 @@ docker compose down && docker compose up -d
 sleep 5
 
 # import database data
-docker exec -i mariadb_bench mysql -ubench -pbench bench < ./src/db/films.sql
+max_retries=5
+retry_count=0
+wait_time=1  # Seconds to wait between retries
+
+while true; do
+  docker exec -i mariadb_bench mysql -ubench -pbench bench < ./src/db/films.sql
+
+  if [ $? -eq 0 ]; then
+    echo "Database data imported successfully!"
+    break
+  else
+    retry_count=$((retry_count + 1))
+
+    if [ $retry_count -ge $max_retries ]; then
+      echo "Command failed after $max_retries retries. Exiting."
+      exit 1
+    fi
+    sleep $wait_time
+  fi
+done
