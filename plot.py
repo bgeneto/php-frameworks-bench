@@ -648,7 +648,7 @@ if __name__ == "__main__":
         exit(1)
 
     # Exclude the following directories from the count
-    counter = FileCounter("/www/html", ["storage", "var", "logs", "cache", "writable"])
+    counter = FileCounter(work_dir + "/www/html", ["storage", "var", "logs", "cache", "writable"])
     total_files = counter.count_files()
 
     plotter = FilePlotter(total_files)
