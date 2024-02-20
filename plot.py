@@ -420,25 +420,18 @@ class WrkPlotter:
 
         # order latencies in ascending and req_secs descending order
         for benchmark_name, data in results.items():
-            # Convert strings to numerical values
-            # data["latencies"] = [convert_to_number(value) for value in data["latencies"]]
-            # data["req_secs"] = [convert_to_number(value) for value in data["req_secs"]]
+            # Create a temporary DataFrame for sorting within each benchmark
+            df = pd.DataFrame(data)
 
-            # Sort the data by latency in ascending order
-            (
-                data["frameworks"],
-                data["latencies"],
-                data["req_secs"],
-            ) = zip(
-                *sorted(
-                    zip(
-                        data["frameworks"],
-                        data["latencies"],
-                        data["req_secs"],
-                    ),
-                    key=lambda x: x[1],
-                )
-            )
+            # Sort by 'latencies' (ascending), then 'req_secs' (descending)
+            df = df.sort_values(by=['latencies', 'req_secs'], ascending=[True, False])
+
+            # Update results dictionary with sorted data
+            results[benchmark_name] = {
+                'frameworks': df['frameworks'].to_list(),
+                'latencies': df['latencies'].to_list(),
+                'req_secs': df['req_secs'].to_list()
+            }
 
         col = 1
         for benchmark_name, data in results.items():
@@ -449,7 +442,7 @@ class WrkPlotter:
                         x=[framework],
                         y=[latency],
                         name=framework,
-                        text=f"{latency:.0f}",
+                        text=f"{latency:.1f}",
                     ),
                     row=1,
                     col=col,
@@ -462,7 +455,7 @@ class WrkPlotter:
                         x=[framework],
                         y=[req_sec],
                         name=framework,
-                        text=f"{req_sec:.0f}",
+                        text=f"{req_sec:.1f}",
                     ),
                     row=2,
                     col=col,
